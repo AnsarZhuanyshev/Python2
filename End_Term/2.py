@@ -4,7 +4,10 @@ import numpy as np
 # Main Function takes in the coefficient of the Cubic Polynomial
 # as parameters and it returns the roots in form of numpy array.
 # Polynomial Structure -> ax^3 + bx^2 + cx + d = 0
-
+a = int(input())
+b = int(input())
+c = int(input())
+d = int(input())
 def solve(a, b, c, d):
 
     if (a == 0 and b == 0):                     # Case for handling Liner Equation
@@ -84,4 +87,4 @@ def findG(a, b, c, d):
 def findH(g, f):
     return ((g ** 2.0) / 4.0 + (f ** 3.0) / 27.0)
 
-print(solve(0,2,1,4))
+print(solve(a,b,c,d))
