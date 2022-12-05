@@ -151,9 +151,8 @@ print(matrix_identity," This is identity matrix ","\n")
 #-----------Square root matrix --------------
 sqrt_list = []
 sqrt_str = []
-list_2 = []
 for x in eigen_list:
-    for i in range(0,matrix_size):
+    for i in range(0,matrix_size//matrix_size):
         for j in range(0,matrix_size):
             if i==j:
                 sqrt_str.append(x)
@@ -161,9 +160,15 @@ for x in eigen_list:
                 sqrt_str.append(0)
         sqrt_list.append(sqrt_str)
         sqrt_str = []
-    list_2.append(sqrt_list)
-    sqrt_list = []
-#matrix_sqrt_lambda = np.matrix(list_2)
-#print(matrix_sqrt_lambda,"This is diagonal matrix with known eigenvalues","\n")
-print(list_2)
+matrix_sqrt_lambda = np.matrix(sqrt_list)
+print(matrix_sqrt_lambda,"This is matrix for sys","\n")
 print(sqrt_list)
+print(sqrt_str)
+
+list_sqrt_lamda = []
+for i in range(0,matrix_size):
+    for j in range(0,matrix_size):
+        sqrt_list[i][j] = sqrt_list[i][0]
+        sqrt_list[i][0] = 0
+        list_sqrt_lamda.append(sqrt_list[i][j])
+print(list_sqrt_lamda)
