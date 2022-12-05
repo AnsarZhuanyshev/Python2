@@ -98,11 +98,14 @@ for x in eigen_list:
     matrix_diagonal = np.matrix(diagonal_list)
 print(matrix_diagonal,"This is diagonal matrix with known eigenvalues","\n")
 
-#-----------Deviding matrix into 3-----------
-deviding_list = matrix_diagonal.reshape(-1)
-print(deviding_list)
+big_mtx = diagonal_list
+all_matrices =[[] for i in range(len(big_mtx)//matrix_size)]
+for i in range(len(big_mtx)):
+    all_matrices[i//matrix_size].append(big_mtx[i])
+print(all_matrices,"\n")
 
-matrices_3x3 = deviding_list.reshape(3)
+for j in all_matrices:
+    print(np.matrix(j),"There we have each matrix for each eigenvalue","\n")
 '''
 #----------Matrix For System --------------
 matrix_for_system = np.matrix(matrix_AtA - matrix_diagonal)
@@ -129,3 +132,38 @@ print(sol)
 #matrix_inverse_A = np.linalg.inv(matrix_A)
 #print(matrix_inverse_A)      
 '''
+
+#----------Identity matrix---------
+matrix_identity_str = []
+list_identity =[]
+for i in range(0,matrix_size):
+    for j in range(0,matrix_size):
+        if i==j :
+            matrix_identity_str.append(1)
+        else:
+            matrix_identity_str.append(0)
+    list_identity.append(matrix_identity_str)
+    matrix_identity_str=[]
+matrix_identity = np.matrix(list_identity)
+print(matrix_identity," This is identity matrix ","\n")  
+
+
+#-----------Square root matrix --------------
+sqrt_list = []
+sqrt_str = []
+list_2 = []
+for x in eigen_list:
+    for i in range(0,matrix_size):
+        for j in range(0,matrix_size):
+            if i==j:
+                sqrt_str.append(x)
+            else:
+                sqrt_str.append(0)
+        sqrt_list.append(sqrt_str)
+        sqrt_str = []
+    list_2.append(sqrt_list)
+    sqrt_list = []
+#matrix_sqrt_lambda = np.matrix(list_2)
+#print(matrix_sqrt_lambda,"This is diagonal matrix with known eigenvalues","\n")
+print(list_2)
+print(sqrt_list)
