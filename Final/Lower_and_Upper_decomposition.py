@@ -155,7 +155,7 @@ l2 = var("l2")
 l3 = var("l3")
 
 #------------finding values of unknowns ------------
-def Finding_unknowns(matrix_size):
+def Finding_unknowns(matrix_size,a_list):
     if matrix_size ==2 :
         expr1 = LU[0][0] - a_list[0][0]
         expr2 = LU[1][0] - a_list[1][0]
@@ -175,7 +175,7 @@ def Finding_unknowns(matrix_size):
         expr9 = LU[2][2] - a_list[2][2]
         EQ = solve((expr1,expr2,expr3,expr4,expr5,expr6,expr7,expr8,expr9),(u1,u2,u3,u4,u5,u6,l1,l2,l3))
     return EQ
-print(Finding_unknowns(matrix_size),"\n")
+print(Finding_unknowns(matrix_size,a_list),"\n")
 
 #--------------U matrix---------------------
 def U(matrix_size):
