@@ -2,6 +2,7 @@ from sympy import *
 import random
 import math
 import numpy as np
+import math
 #------------ A = Q * S ------------
 
 #--------size for matrix--------------
@@ -27,7 +28,7 @@ def Zero_matrix(matrix_size):
         zero_list.append(zero_str)
         zero_str = []
     return zero_list
-print(Zero_matrix(matrix_size),"\n")
+#print(Zero_matrix(matrix_size),"\n")
 
 #-------def for mul -------------
 def mat_mul(a_list, b_list):
@@ -134,7 +135,7 @@ def determinant(a_list):
 def A_transpose_to_A(a_list):
     A_transpose_A_list = mat_mul(transpos(a_list),a_list)
     return A_transpose_A_list
-#print("This is our A_Transpose_to_A matrix" , A_transpose_to_A(a_list))
+print("This is our A_Transpose_to_A matrix" , A_transpose_to_A(a_list))
 
 #---------xI matrix-------------
 def xI_matrix(matrix_size):
@@ -247,17 +248,240 @@ def Eigenvalues_by_z5():
         eigenValue = (round(i) * 36 ) % 5 
         eigen_values_list_by_z5.append(eigenValue)
     return eigen_values_list_by_z5
-print(Eigenvalues_by_z5())
+print("They r our eigenvalues in z5 --- " , Eigenvalues_by_z5(),"\n")
 
-#-----------creating matrices-------------
+#-----------creating list with all matrix elements-------------
 def Matrices_for_Eigen_System(matrix_size):
-    EigenMatrix1 = []
+    Eigenlist1 = []
     for k in Eigenvalues_by_z5():
         for i in range(0,matrix_size):
             for j in range(0,matrix_size):
                 if i==j:
-                    EigenMatrix1.append(k)
+                    Eigenlist1.append(k)
                 else:
-                    EigenMatrix1.append(0)
-    return EigenMatrix1
-print(Matrices_for_Eigen_System(matrix_size))
+                    Eigenlist1.append(0)
+    return Eigenlist1
+#print(Matrices_for_Eigen_System(matrix_size))
+
+#-----------deviding into 3 lists----------------
+xI1_list = []
+xI2_list = []
+xI3_list = []
+if matrix_size ==2:
+    for i in range(0,matrix_size*matrix_size):
+        xI1_list.append(Matrices_for_Eigen_System(matrix_size)[i])
+    for j in range(matrix_size*matrix_size,2*matrix_size*matrix_size):
+        xI2_list.append(Matrices_for_Eigen_System(matrix_size)[j])
+elif matrix_size ==3:
+    for i in range(0,matrix_size*matrix_size):
+        xI1_list.append(Matrices_for_Eigen_System(matrix_size)[i])
+    for j in range(matrix_size*matrix_size,2*matrix_size*matrix_size):
+        xI2_list.append(Matrices_for_Eigen_System(matrix_size)[j])
+    for k in range(2*matrix_size*matrix_size,3*matrix_size*matrix_size):
+        xI3_list.append(Matrices_for_Eigen_System(matrix_size)[k])
+##----------------make correct format
+def make_format(my_list):
+    incorrect_format = np.array(my_list)
+    correct_format = incorrect_format.reshape(matrix_size,matrix_size)
+    return correct_format
+
+#--------------AtA-xI----------------
+if matrix_size == 3 :
+    xI1_np = make_format(xI1_list)
+    xI2_np = make_format(xI2_list)
+    xI3_np = make_format(xI3_list)
+    AtA_sub_xI1 = np.array(mat_substract(A_transpose_to_A(a_list),xI1_np))
+    AtA_sub_xI2 = np.array(mat_substract(A_transpose_to_A(a_list),xI2_np))
+    AtA_sub_xI3 = np.array(mat_substract(A_transpose_to_A(a_list),xI3_np))
+elif matrix_size ==2 :
+    xI1_np = make_format(xI1_list)
+    xI2_np = make_format(xI2_list)
+    AtA_sub_xI1 = np.array(mat_substract(A_transpose_to_A(a_list),xI1_np))
+    AtA_sub_xI2 = np.array(mat_substract(A_transpose_to_A(a_list),xI2_np))
+
+#-------------CEF of matrix AtA-xI-------------------
+def ref(mtx): 
+    inverses = {1:1,2:3,3:2,4:4,0:1} 
+    identityy = np.diagflat([1 for i in range(len(mtx))]) 
+    for i in range(0, mtx.shape[0]): 
+        j = 1 
+        pivot = mtx[i][i] 
+        while pivot == 0 and i + j < mtx.shape[0]: 
+            identityy[[i, i + j]] = identityy[[i + j, i]] 
+            mtx[[i, i + j]] = mtx[[i + j, i]] 
+            j += 1 
+            pivot = mtx[i][i] 
+        if pivot == 0: 
+            return [mtx%5,identityy%5] 
+        row1 = mtx[i] 
+        row2 = identityy[i] 
+        identityy[i] = row2*inverses[pivot%5] 
+        mtx[i] = row1*inverses[pivot%5] 
+        for j in range(i + 1, mtx.shape[0]): 
+            identityy[j] = identityy[j] - identityy[i] * mtx[j][i] 
+            mtx[j] = mtx[j] - mtx[i] * mtx[j][i] 
+    return mtx%5,identityy%5
+def cef(mtx): 
+    new_mtx = mtx.T 
+    arr = ref(new_mtx) 
+    x,y = arr[0].T,arr[1].T 
+    return x%5,y%5
+
+#-----------Eigenvectors ---------------------
+w , v = np.linalg.eig(A_transpose_to_A(a_list))
+for i in range(0,matrix_size):
+    for j in range(0,matrix_size):
+        v[i][j] = (v[i][j])
+print(v," Eigenvector matrix","\n")
+
+#-------inverse for maatrices---------------
+def inverse_matrix(a):
+    if matrix_size == 3:
+        def determinant3(a_list):
+            sum = a_list[0,0] * (a_list[1,1] * a_list[2,2] - a_list[1,2] * a_list[2,1]) - a_list[0,1] * (a_list[1,0] * a_list[2,2] - a_list[2,0] * a_list[1,2]) + a_list[0,2] * (a_list[1,0]*a_list[2,1] -a_list[2,0] * a_list[1,1])
+            return sum
+        def transpose(a):
+            a1 = []
+            for i in range(3):
+                for j in range(3):
+                    a1.append(a[j,i])
+            return a1
+        def step3(a):
+            a = np.array(a)
+            a = a.reshape(3,3)
+            ans =[]
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=0 and j !=0:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=0 and j !=1:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=0 and j !=2:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=1 and j !=0:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=1 and j !=1:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=1 and j !=2:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=2 and j !=0:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=2 and j !=1:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=2 and j !=2:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            '''ans.append(a[1,1] * a[2,2] - a[1,2] * a[2,1])
+            ans.append(a[1,0] * a[2,2] - a[1,2] * a[2,0])
+            ans.append(a[1,0] * a[2,1] - a[1,1] * a[2,1])'''
+            return ans
+        a = np.array(a)
+        a = a.reshape(3,3)
+        detA=determinant3(a)
+        tran = transpose(a)
+        mat1 = step3(tran)
+        for i in range(len(mat1)):
+            if i%2 ==1:
+                mat1[i] = -1*mat1[i]
+        x = 1/detA
+        for i in range(9):
+            mat1[i] = x * mat1[i]
+            y = str(mat1[i])
+            if y[-2:] == '.0':
+                mat1[i] = int(mat1[i]) 
+        return (mat1)
+    elif matrix_size == 2 :
+        def determinant2(a_list):
+            a_list = np.array(a)
+            a_list = a_list.reshape(2,2)
+            sum = (a_list[0,0] * a_list[1,1] - a_list[0,1] * a_list[1,0])
+            return sum
+        def transpose(a):
+            a1 = []
+            a1.append(a[3])
+            a1.append(-1*a[1])
+            a1.append(-1*a[2])
+            a1.append(a[0])
+            return a1
+        detA = determinant2(a)
+        mat1 = transpose(a)
+        x = 1/detA
+        for i in range(4):
+            mat1[i] = x * mat1[i]
+            y = str(mat1[i])
+            if y[-2:] == '.0':
+                mat1[i] = int(mat1[i]) 
+        return (mat1)
+inverse_v = inverse_matrix(v)
+
+inverse_v_matrix = np.array(inverse_v).reshape(3,3)
+for i in range(0,matrix_size):
+    for j in range(0,matrix_size):
+        inverse_v_matrix[i][j] = (inverse_v_matrix[i][j]) 
+print(inverse_v_matrix, " Inverse Eigenvector matrix","\n")
+
+#----------Diagonal matrix------------
+def Diagonal_matrix(matrix_size):
+    zer0 = np.array([[0,0,0],
+                     [0,0,0],
+                     [0,0,0]])
+    l = Eigenvalues_by_z5()
+    if matrix_size == 3:
+        zer0[0][0] += math.sqrt(l[0])
+        zer0[1][1] += math.sqrt(l[1])
+        zer0[2][2] += math.sqrt(l[2])
+    return zer0
+Square_diagonal_matrix = Diagonal_matrix(matrix_size)
+print(Square_diagonal_matrix , " Square root diagonal matrix","\n")
+#------ S matrix -----------
+S = mat_mul(mat_mul(v,Square_diagonal_matrix),inverse_v_matrix)
+print(S , " S matrix","\n")
+
+#------------Q matrix -----------
+S_inverse = inverse_matrix(S)
+
+S_inverse_matrix = np.array(S_inverse).reshape(3,3)
+for i in range(0,matrix_size):
+    for j in range(0,matrix_size):
+        S_inverse_matrix[i][j] = (S_inverse_matrix[i][j]) 
+print(S_inverse_matrix , " S inverse matrix","\n")
+
+Q = mat_mul(a_list,S_inverse_matrix)
+print(Q , " Q matrix","\n")
+
+
+print(mat_mul(Q,S), " A matrix", "\n" )
