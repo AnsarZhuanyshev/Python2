@@ -1,4 +1,5 @@
 import random 
+import numpy as np
 #----------size-------------
 matrix_size = int(input())
 
@@ -106,3 +107,131 @@ def determinant(a_list):
                 sum = a_list[0][0] * (a_list[1][1] * (a_list[2][2] * a_list[3][3] - a_list[2][3] * a_list[3][2]) - a_list[1][2] * (a_list[2][1] * a_list[3][3] - a_list[3][1] * a_list[2][3]) + a_list[1][3] * (a_list[2][1]*a_list[3][2] -a_list[3][1] * a_list[2][2]))  - a_list[0][1] * (a_list[1][0] * (a_list[2][2] * a_list[3][3] - a_list[2][3] * a_list[3][2]) - a_list[1][2] * (a_list[2][0] * a_list[3][3] - a_list[3][0] * a_list[2][3]) + a_list[1][3] * (a_list[2][0]*a_list[3][2] -a_list[3][0] * a_list[2][2]))+ a_list[0][2] * (a_list[1][0] * (a_list[2][1] * a_list[3][3] - a_list[2][3] * a_list[3][1]) - a_list[1][1] * (a_list[2][0] * a_list[3][3] - a_list[3][0] * a_list[2][3]) + a_list[1][3] * (a_list[2][0]*a_list[3][1] -a_list[3][0] * a_list[2][1]))- a_list[0][3] * (a_list[1][0] * (a_list[2][1] * a_list[3][2] - a_list[2][2] * a_list[3][1]) - a_list[1][1] * (a_list[2][0] * a_list[3][2] - a_list[3][0] * a_list[2][2]) + a_list[1][2] * (a_list[2][0]*a_list[3][1] -a_list[3][0] * a_list[2][1]))
     return sum
 print("This is determinant " , determinant(a_list),"\n")
+
+#----------Format for inverse -------------
+def format_for_inverse(mat,matrix_size):
+    l = []
+    for i in range(0,matrix_size):
+        for j in range(0,matrix_size):
+            l.append(mat[i][j])
+    return l
+i_format = format_for_inverse(a_list,matrix_size)
+
+def make_format(my_list):
+    incorrect_format = np.array(my_list)
+    correct_format = incorrect_format.reshape(matrix_size,matrix_size)
+    return correct_format
+#-----------inverse -------------------
+def inverse_matrix(a):
+    if matrix_size == 3:
+        def determinant3(a_list):
+            sum = a_list[0,0] * (a_list[1,1] * a_list[2,2] - a_list[1,2] * a_list[2,1]) - a_list[0,1] * (a_list[1,0] * a_list[2,2] - a_list[2,0] * a_list[1,2]) + a_list[0,2] * (a_list[1,0]*a_list[2,1] -a_list[2,0] * a_list[1,1])
+            return sum
+        def transpose(a):
+            a1 = []
+            for i in range(3):
+                for j in range(3):
+                    a1.append(a[j,i])
+            return a1
+        def step3(a):
+            a = np.array(a)
+            a = a.reshape(3,3)
+            ans =[]
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=0 and j !=0:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=0 and j !=1:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=0 and j !=2:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=1 and j !=0:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=1 and j !=1:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=1 and j !=2:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=2 and j !=0:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=2 and j !=1:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            for i in range(3):
+                for j in range(3):
+                    if i!=2 and j !=2:
+                        an.append(a[i,j])
+            ans.append(an[0] * an[3] - an[1] * an[2])
+            an = []
+            '''ans.append(a[1,1] * a[2,2] - a[1,2] * a[2,1])
+            ans.append(a[1,0] * a[2,2] - a[1,2] * a[2,0])
+            ans.append(a[1,0] * a[2,1] - a[1,1] * a[2,1])'''
+            return ans
+        a = np.array(a)
+        a = a.reshape(3,3)
+        detA=determinant3(a)
+        tran = transpose(a)
+        mat1 = step3(tran)
+        for i in range(len(mat1)):
+            if i%2 ==1:
+                mat1[i] = -1*mat1[i]
+        x = 1/detA
+        for i in range(9):
+            mat1[i] = x * mat1[i]
+            y = str(mat1[i])
+            if y[-2:] == '.0':
+                mat1[i] = int(mat1[i]) 
+        return (mat1)
+    elif matrix_size == 2 :
+        def determinant2(a_list):
+            a_list = np.array(a)
+            a_list = a_list.reshape(2,2)
+            sum = (a_list[0,0] * a_list[1,1] - a_list[0,1] * a_list[1,0])
+            return sum
+        def transpose(a):
+            a1 = []
+            a1.append(a[3])
+            a1.append(-1*a[1])
+            a1.append(-1*a[2])
+            a1.append(a[0])
+            return a1
+        detA = determinant2(a)
+        mat1 = transpose(a)
+        x = 1/detA
+        for i in range(4):
+            mat1[i] = x * mat1[i]
+            y = str(mat1[i])
+            if y[-2:] == '.0':
+                mat1[i] = int(mat1[i]) 
+        return (mat1)
+
+print("This is the inverse matrix of A " ,"\n", make_format(inverse_matrix(i_format)))
