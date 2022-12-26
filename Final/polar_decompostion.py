@@ -1,6 +1,6 @@
 from sympy import *
 import random
-import math
+from math import *
 import numpy as np
 import math
 #------------ A = Q * S ------------
@@ -33,77 +33,35 @@ def Zero_matrix(matrix_size):
 #-------def for mul -------------
 def mat_mul(a_list, b_list):
     #------------zero matrix------------
-    zero_str = []
-    zero = []
-    for i in range(0,matrix_size):
-        for j in range(0,matrix_size):
-            zero_str.append(0)
-        zero.append(zero_str)
-        zero_str=[]
+    zero = Zero_matrix(matrix_size)
     #---------matrix mul--------
     for i in range(len(a_list)):
         for j in range(len(b_list[0])):
             for k in range(len(b_list)):
                 zero[i][j] += a_list[i][k] * b_list[k][j] 
     #-------matrix mul by z5 ----------
-    mul_str = []
-    mul_list = []
-    for el_str in zero:
-        for el in el_str:
-            el_by_z5 = el % 5
-            mul_str.append(el_by_z5)
-        mul_list.append(mul_str)
-        mul_str = []
-    return mul_list
-#print("This is multiplied matrix by Z5 " , mat_mul(a_list,b_list),"\n")
+    return zero
+#print("This is multiplied matrix by Z5 " , mat_mul(a_list,a_list),"\n")
 
 #-------------sum--------------
 def mat_sum(a_list,b_list):
     #------------zero matrix------------
-    zero_str = []
-    zero = []
+    zero = Zero_matrix(matrix_size)
     for i in range(0,matrix_size):
         for j in range(0,matrix_size):
-            zero_str.append(0)
-        zero.append(zero_str)
-        zero_str=[]
-    for i in range(0,matrix_size):
-        for j in range(0,matrix_size):
-            zero[i][j] +=(a_list[i][j] + b_list[i][j]) % 5
+            zero[i][j] +=(a_list[i][j] + b_list[i][j])
     return zero
-#print("This is adition matrix " , mat_sum(a_list,b_list),"\n")
+#print("This is adition matrix " , mat_sum(a_list,a_list),"\n")
 
-#-------substraction--------
+#-------substraction --------
 def mat_substract(a_list,b_list):
-    #------------zero matrix------------
-    zero_str = []
-    zero = []
-    for i in range(0,matrix_size):
-        for j in range(0,matrix_size):
-            zero_str.append(0)
-        zero.append(zero_str)
-        zero_str=[]
-    for i in range(0,matrix_size):
-        for j in range(0,matrix_size):
-            zero[i][j] +=(a_list[i][j] - b_list[i][j])%5
-    return zero
-#print("This is subtraction matrix ",mat_substract(a_list,b_list),"\n")
-
-#-------substraction in R --------
-def mat_substract_in_R(a_list,b_list):
-    #------------zero matrix------------
-    zero_str = []
-    zero = []
-    for i in range(0,matrix_size):
-        for j in range(0,matrix_size):
-            zero_str.append(0)
-        zero.append(zero_str)
-        zero_str=[]
+    zero = Zero_matrix(matrix_size)
     for i in range(0,matrix_size):
         for j in range(0,matrix_size):
             zero[i][j] +=(a_list[i][j] - b_list[i][j])
     return zero
-#print("This is subtraction matrix ",mat_substract(a_list,b_list),"\n")
+#print("This is subtraction matrix ",mat_substract(mat_mul(a_list,a_list),a_list),"\n")
+
 
 #--------transpose------------------
 def transpos(a_list):
@@ -115,7 +73,7 @@ def transpos(a_list):
         m_transpose.append(str_transpose)
         str_transpose = []
     return m_transpose
-#print("This is transposed matrix ",transpose(a_list),"\n")
+#print("This is transposed matrix ",transpos(a_list),"\n")
 
 #-----------determinant equation------------
 def determinant(a_list):
@@ -155,7 +113,7 @@ def xI_matrix(matrix_size):
 
 #-----------A_transpose_A - xI --------------
 def A_transpose_A_sub_xI(a_list,matrix_size):
-    A_transpose_A_sub_xI_list = mat_substract_in_R(A_transpose_to_A(a_list),xI_matrix(matrix_size))
+    A_transpose_A_sub_xI_list = mat_substract(A_transpose_to_A(a_list),xI_matrix(matrix_size))
     return A_transpose_A_sub_xI_list
 #print(A_transpose_A_sub_xI(a_list,matrix_size),"\n")
 
@@ -240,20 +198,14 @@ def findH(g, f):
     return ((g ** 2.0) / 4.0 + (f ** 3.0) / 27.0)
 #print(Solving_polynomial_eq(a,b,c,d))
 
-#-------------take Values by Z5--------------
-def Eigenvalues_by_z5():
-    eigen_values_list = Solving_polynomial_eq(a,b,c,d)
-    eigen_values_list_by_z5 = []
-    for i in eigen_values_list:
-        eigenValue = (round(i) * 36 ) % 5 
-        eigen_values_list_by_z5.append(eigenValue)
-    return eigen_values_list_by_z5
-print("They r our eigenvalues in z5 --- " , Eigenvalues_by_z5(),"\n")
+#-----------list with values ----------------
+Eigenvalues = Solving_polynomial_eq(a,b,c,d)
+print(Eigenvalues , " This is eigenvalues ", "\n")
 
 #-----------creating list with all matrix elements-------------
 def Matrices_for_Eigen_System(matrix_size):
     Eigenlist1 = []
-    for k in Eigenvalues_by_z5():
+    for k in Eigenvalues:
         for i in range(0,matrix_size):
             for j in range(0,matrix_size):
                 if i==j:
@@ -261,7 +213,6 @@ def Matrices_for_Eigen_System(matrix_size):
                 else:
                     Eigenlist1.append(0)
     return Eigenlist1
-#print(Matrices_for_Eigen_System(matrix_size))
 
 #-----------deviding into 3 lists----------------
 xI1_list = []
@@ -279,11 +230,14 @@ elif matrix_size ==3:
         xI2_list.append(Matrices_for_Eigen_System(matrix_size)[j])
     for k in range(2*matrix_size*matrix_size,3*matrix_size*matrix_size):
         xI3_list.append(Matrices_for_Eigen_System(matrix_size)[k])
-##----------------make correct format
+
+#-------------From 1x9 list create 3x3 matrix---------------
 def make_format(my_list):
     incorrect_format = np.array(my_list)
     correct_format = incorrect_format.reshape(matrix_size,matrix_size)
     return correct_format
+#print(make_format(xI1_list))
+#print(make_format(xI2_list))
 
 #--------------AtA-xI----------------
 if matrix_size == 3 :
@@ -329,10 +283,16 @@ def cef(mtx):
 
 #-----------Eigenvectors ---------------------
 w , v = np.linalg.eig(A_transpose_to_A(a_list))
-for i in range(0,matrix_size):
-    for j in range(0,matrix_size):
-        v[i][j] = (v[i][j])
 print(v," Eigenvector matrix","\n")
+
+#----------Format for inverse -------------
+def format_for_inverse(mat,matrix_size):
+    l = []
+    for i in range(0,matrix_size):
+        for j in range(0,matrix_size):
+            l.append(mat[i][j])
+    return l
+v_format = format_for_inverse(v,matrix_size)
 
 #-------inverse for maatrices---------------
 def inverse_matrix(a):
@@ -446,42 +406,39 @@ def inverse_matrix(a):
             if y[-2:] == '.0':
                 mat1[i] = int(mat1[i]) 
         return (mat1)
-inverse_v = inverse_matrix(v)
-
-inverse_v_matrix = np.array(inverse_v).reshape(3,3)
-for i in range(0,matrix_size):
-    for j in range(0,matrix_size):
-        inverse_v_matrix[i][j] = (inverse_v_matrix[i][j]) 
-print(inverse_v_matrix, " Inverse Eigenvector matrix","\n")
+v_invers = make_format(inverse_matrix(v_format))
+print(v_invers," This is Eigenvector inverse matrix" , "\n")
 
 #----------Diagonal matrix------------
 def Diagonal_matrix(matrix_size):
-    zer0 = np.array([[0,0,0],
-                     [0,0,0],
-                     [0,0,0]])
-    l = Eigenvalues_by_z5()
+    zer0 = Zero_matrix(matrix_size)
+    l = Eigenvalues
     if matrix_size == 3:
-        zer0[0][0] += math.sqrt(l[0])
-        zer0[1][1] += math.sqrt(l[1])
-        zer0[2][2] += math.sqrt(l[2])
+        zer0[0][0] += (ceil(l[0]*100)/100)**0.5
+        zer0[1][1] += (ceil(l[1]*100)/100)**0.5
+        zer0[2][2] += (ceil(l[2]*100)/100)**0.5
+    elif matrix_size == 2:
+        zer0[0][0] += (ceil(l[0]*100)/100)**0.5
+        zer0[1][1] += (ceil(l[1]*100)/100)**0.5
     return zer0
-Square_diagonal_matrix = Diagonal_matrix(matrix_size)
-print(Square_diagonal_matrix , " Square root diagonal matrix","\n")
-#------ S matrix -----------
-S = mat_mul(mat_mul(v,Square_diagonal_matrix),inverse_v_matrix)
-print(S , " S matrix","\n")
+Square_diagonal_list = Diagonal_matrix(matrix_size)
+Square_diagonal_matrix = np.array(Square_diagonal_list)
 
-#------------Q matrix -----------
-S_inverse = inverse_matrix(S)
+print(Square_diagonal_matrix, " Square root diagonal matrix","\n")
 
-S_inverse_matrix = np.array(S_inverse).reshape(3,3)
+
+#--------------- S = V D V^-1---------------
+S_list = mat_mul(mat_mul(v,Square_diagonal_matrix),v_invers)
+S_inverse = inverse_matrix(format_for_inverse(make_format(S_list),matrix_size))
+S_inverse_matrix = np.array(S_inverse).reshape(matrix_size,matrix_size)
 for i in range(0,matrix_size):
     for j in range(0,matrix_size):
         S_inverse_matrix[i][j] = (S_inverse_matrix[i][j]) 
 print(S_inverse_matrix , " S inverse matrix","\n")
 
+#------------Q matrix -----------
 Q = mat_mul(a_list,S_inverse_matrix)
-print(Q , " Q matrix","\n")
+print(np.array(Q) , " Q matrix","\n")
 
 
-print(mat_mul(Q,S), " A matrix", "\n" )
+print(np.array(mat_mul(Q,S_list)), " A matrix", "\n" )
